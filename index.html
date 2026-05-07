@@ -7,22 +7,22 @@
   <meta name="description" content="A polished personal dashboard for Jarvis-managed notes, plans, systems, and projects." />
   <style>
     :root {
-      --bg: #07111f;
-      --bg-2: #0c1830;
-      --surface: rgba(14, 20, 38, 0.82);
-      --surface-2: rgba(255,255,255,0.05);
-      --surface-3: rgba(255,255,255,0.03);
-      --text: #eef3ff;
-      --muted: #9ba8c7;
-      --soft: #7484aa;
-      --line: rgba(255,255,255,0.09);
-      --line-2: rgba(255,255,255,0.14);
-      --accent: #8ca8ff;
-      --accent-2: #6ae1c2;
-      --accent-3: #ffd978;
-      --shadow: 0 30px 80px rgba(0,0,0,0.42);
-      --radius: 26px;
-      --radius-lg: 34px;
+      --bg: #f7f6f3;
+      --bg-2: #efede8;
+      --surface: rgba(255,255,255,0.88);
+      --surface-2: rgba(255,255,255,0.78);
+      --surface-3: rgba(248,247,243,0.9);
+      --text: #202124;
+      --muted: #5f6368;
+      --soft: #8a8f98;
+      --line: rgba(15,23,42,0.08);
+      --line-2: rgba(15,23,42,0.12);
+      --accent: #2f6feb;
+      --accent-2: #0f9d58;
+      --accent-3: #e0b341;
+      --shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+      --radius: 22px;
+      --radius-lg: 30px;
       --max: 1280px;
     }
 
@@ -34,16 +34,15 @@
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(140,168,255,0.22), transparent 26%),
-        radial-gradient(circle at top right, rgba(106,225,194,0.14), transparent 24%),
-        radial-gradient(circle at bottom center, rgba(255,217,120,0.08), transparent 22%),
+        radial-gradient(circle at top left, rgba(47,111,235,0.05), transparent 22%),
+        radial-gradient(circle at bottom right, rgba(15,157,88,0.04), transparent 18%),
         linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
     }
 
     .shell {
       max-width: var(--max);
       margin: 0 auto;
-      padding: 28px 20px 80px;
+      padding: 26px 18px 80px;
     }
 
     .topbar {
@@ -54,13 +53,14 @@
       margin-bottom: 18px;
       padding: 12px 14px;
       border: 1px solid var(--line);
-      background: rgba(8, 14, 27, 0.44);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(255,255,255,0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border-radius: 18px;
       position: sticky;
       top: 12px;
       z-index: 20;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
     }
 
     .brand {
@@ -71,23 +71,20 @@
     }
 
     .brand-badge {
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(140,168,255,0.28), rgba(106,225,194,0.18));
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffffff 0%, #f0efe9 100%);
       display: grid;
       place-items: center;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid var(--line);
       font-weight: 700;
-    }
-
-    .brand-text {
-      min-width: 0;
+      color: #111827;
     }
 
     .eyebrow {
       font-size: 11px;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--soft);
       margin-bottom: 3px;
@@ -111,7 +108,7 @@
     .button,
     .pill {
       border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
+      background: #fff;
       color: var(--text);
       text-decoration: none;
       padding: 10px 13px;
@@ -123,59 +120,30 @@
     }
 
     .button.primary {
-      background: linear-gradient(135deg, rgba(140,168,255,0.22), rgba(106,225,194,0.14));
-      border-color: rgba(140,168,255,0.28);
+      background: #111827;
+      color: #fff;
+      border-color: #111827;
     }
 
     .hero {
-      position: relative;
-      overflow: hidden;
       border: 1px solid var(--line);
-      background: linear-gradient(145deg, rgba(16,24,46,0.88), rgba(11,18,34,0.76));
+      background: linear-gradient(180deg, #ffffff 0%, #faf9f6 100%);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow);
-      padding: 38px;
+      padding: 34px;
       margin-bottom: 22px;
-    }
-
-    .hero::before,
-    .hero::after {
-      content: "";
-      position: absolute;
-      border-radius: 999px;
-      filter: blur(8px);
-      opacity: 0.7;
-      pointer-events: none;
-    }
-
-    .hero::before {
-      width: 280px;
-      height: 280px;
-      top: -120px;
-      right: -80px;
-      background: radial-gradient(circle, rgba(140,168,255,0.26), transparent 65%);
-    }
-
-    .hero::after {
-      width: 220px;
-      height: 220px;
-      bottom: -120px;
-      left: -60px;
-      background: radial-gradient(circle, rgba(106,225,194,0.2), transparent 65%);
     }
 
     .hero-grid {
       display: grid;
       grid-template-columns: 1.35fr 0.9fr;
       gap: 24px;
-      position: relative;
-      z-index: 1;
     }
 
     .hero h1 {
       margin: 8px 0 12px;
-      font-size: clamp(38px, 6vw, 68px);
-      line-height: 0.98;
+      font-size: clamp(36px, 6vw, 64px);
+      line-height: 1.02;
       letter-spacing: -0.05em;
       max-width: 760px;
     }
@@ -195,12 +163,10 @@
     }
 
     .glass-card {
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.74);
+      border-radius: 18px;
       padding: 18px;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
     }
 
     .mini-stats {
@@ -209,14 +175,8 @@
       align-content: start;
     }
 
-    .mini-stat {
-      padding: 16px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .mini-stat-label {
+    .mini-stat-label,
+    .stack-label {
       color: var(--soft);
       font-size: 11px;
       letter-spacing: 0.14em;
@@ -224,7 +184,8 @@
       margin-bottom: 6px;
     }
 
-    .mini-stat-value {
+    .mini-stat-value,
+    .stack-value {
       font-size: 15px;
       color: var(--text);
       line-height: 1.55;
@@ -242,8 +203,8 @@
     .sidebar-card {
       border: 1px solid var(--line);
       background: var(--surface);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
     }
@@ -253,7 +214,7 @@
     .search {
       width: 100%;
       border: 1px solid var(--line-2);
-      background: rgba(255,255,255,0.04);
+      background: #fff;
       color: var(--text);
       padding: 14px 16px;
       border-radius: 16px;
@@ -270,12 +231,12 @@
     }
 
     .quick-links a {
-      color: #dce4ff;
+      color: #2b2f36;
       text-decoration: none;
       padding: 10px 12px;
       border-radius: 14px;
-      background: var(--surface-2);
-      border: 1px solid rgba(255,255,255,0.06);
+      background: #fff;
+      border: 1px solid var(--line);
       font-size: 13px;
     }
 
@@ -312,8 +273,8 @@
       text-decoration: none;
       color: var(--muted);
       padding: 12px 14px;
-      border-radius: 16px;
-      background: var(--surface-3);
+      border-radius: 14px;
+      background: rgba(250,249,246,0.9);
       border: 1px solid transparent;
       font-size: 14px;
       transition: 0.18s ease;
@@ -322,7 +283,7 @@
     .nav a:hover {
       color: var(--text);
       border-color: var(--line);
-      background: rgba(255,255,255,0.06);
+      background: #fff;
     }
 
     .stack {
@@ -332,23 +293,9 @@
 
     .stack-item {
       padding: 14px;
-      border-radius: 18px;
-      background: var(--surface-2);
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .stack-label {
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--soft);
-      margin-bottom: 6px;
-    }
-
-    .stack-value {
-      font-size: 14px;
-      line-height: 1.55;
-      color: var(--text);
+      border-radius: 16px;
+      background: rgba(250,249,246,0.95);
+      border: 1px solid var(--line);
     }
 
     .content {
@@ -383,8 +330,8 @@
     .tag {
       padding: 8px 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.07);
+      background: #fff;
+      border: 1px solid var(--line);
       color: var(--muted);
       font-size: 12px;
     }
@@ -392,10 +339,10 @@
     .callout {
       margin-top: 14px;
       padding: 17px 18px;
-      border-radius: 20px;
-      border: 1px solid rgba(140,168,255,0.16);
-      background: linear-gradient(135deg, rgba(140,168,255,0.09), rgba(106,225,194,0.05));
-      color: #dce6ff;
+      border-radius: 18px;
+      border: 1px solid rgba(47,111,235,0.12);
+      background: linear-gradient(180deg, rgba(47,111,235,0.05), rgba(255,255,255,0.82));
+      color: #1f2937;
       line-height: 1.72;
       font-size: 15px;
     }
@@ -412,9 +359,9 @@
 
     .card-lite {
       padding: 20px;
-      border-radius: 22px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid var(--line);
     }
 
     .card-lite h3 {
@@ -433,10 +380,10 @@
 
     .accordion {
       margin-top: 14px;
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
       overflow: hidden;
-      background: rgba(255,255,255,0.03);
+      background: rgba(255,255,255,0.82);
     }
 
     .accordion summary {
@@ -457,7 +404,7 @@
     }
 
     .accordion summary::-webkit-details-marker { display: none; }
-    .accordion[open] summary { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .accordion[open] summary { border-bottom: 1px solid var(--line); }
 
     .accordion-body {
       padding: 16px 18px 18px;
@@ -471,14 +418,14 @@
     }
 
     code {
-      background: rgba(255,255,255,0.06);
-      color: #f1f5ff;
+      background: rgba(15,23,42,0.06);
+      color: #111827;
       padding: 2px 8px;
       border-radius: 8px;
       font-size: 0.95em;
     }
 
-    a { color: #d7e2ff; }
+    a { color: #2559c9; }
     .hidden { display: none !important; }
 
     @media (max-width: 1080px) {
@@ -499,7 +446,7 @@
     <header class="topbar">
       <div class="brand">
         <div class="brand-badge">J</div>
-        <div class="brand-text">
+        <div>
           <div class="eyebrow">Jarvis • Hosted Notes</div>
           <div class="brand-title">Future Notes Dashboard</div>
         </div>
@@ -514,17 +461,17 @@
     <section class="hero">
       <div class="hero-grid">
         <div>
-          <div class="eyebrow">Polished personal dashboard</div>
-          <h1>Built to feel like a real product, not just a raw HTML file.</h1>
+          <div class="eyebrow">Notion-inspired polish</div>
+          <h1>Cleaner, softer, and more document-like — but still premium.</h1>
           <p>
-            This is your clean, phone-friendly notes surface for ideas, projects, systems, and long-term plans.
-            It should stay spacious, intuitive, and satisfying to use — updated by Jarvis whenever you ask.
+            This version pushes the dashboard closer to a refined Notion feel: lighter palette, softer surfaces,
+            cleaner content blocks, and a calmer reading experience on both phone and desktop.
           </p>
           <div class="hero-chips">
-            <div class="pill">Local-first origin</div>
-            <div class="pill">Hosted for phone access</div>
-            <div class="pill">Minimal but polished</div>
-            <div class="pill">Curated over time</div>
+            <div class="pill">Notion-inspired</div>
+            <div class="pill">Phone-friendly</div>
+            <div class="pill">Calm UI</div>
+            <div class="pill">Easy to scan</div>
           </div>
         </div>
         <div class="mini-stats">
@@ -538,7 +485,7 @@
           </div>
           <div class="glass-card">
             <div class="mini-stat-label">Design direction</div>
-            <div class="mini-stat-value">Professional, spacious, intuitive, and easy to scan on both desktop and phone.</div>
+            <div class="mini-stat-value">Professional, spacious, intuitive, and closer to a polished workspace product.</div>
           </div>
         </div>
       </div>
@@ -585,7 +532,7 @@
             </div>
             <div class="stack-item">
               <div class="stack-label">Style target</div>
-              <div class="stack-value">Professional, clean, not cluttered</div>
+              <div class="stack-value">Notion-leaning, clean, not cluttered</div>
             </div>
           </div>
         </div>
@@ -677,7 +624,7 @@
           <div class="section-head">
             <div>
               <h2>Projects</h2>
-              <div class="section-sub">A professional-looking project board that still stays light and easy to navigate.</div>
+              <div class="section-sub">A light, structured project board that stays calm instead of noisy.</div>
             </div>
           </div>
           <div class="grid-2">
@@ -769,10 +716,10 @@
             </div>
           </div>
           <div class="callout">
-            This dashboard should stay spacious, intuitive, and pleasant to use. It should feel like a polished product page, not a cluttered document. Jarvis should keep sections organized, avoid overcrowding, and update it whenever Mr. Kani asks.
+            This dashboard should stay spacious, intuitive, and pleasant to use. It should feel like a polished workspace page, not a cluttered document. Jarvis should keep sections organized, avoid overcrowding, and update it whenever Mr. Kani asks.
           </div>
           <div class="footer-note">
-            This design is intentionally more app-like and professional so it feels good to open on both desktop and phone.
+            This pass specifically pushes the design closer to Notion: lighter palette, softer cards, calmer spacing, and cleaner document-style hierarchy.
           </div>
         </section>
       </main>
