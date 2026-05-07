@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jarvis Notes Hub</title>
+  <style>
+    :root {
+      --bg: #07101e;
+      --bg-2: #0c1529;
+      --panel: rgba(14, 20, 38, 0.74);
+      --panel-2: rgba(255,255,255,0.05);
+      --panel-3: rgba(255,255,255,0.03);
+      --text: #edf2ff;
+      --muted: #9dabc9;
+      --soft: #7a88a9;
+      --line: rgba(255,255,255,0.08);
+      --line-strong: rgba(255,255,255,0.14);
+      --accent: #88a6ff;
+      --accent-2: #63e6be;
+      --accent-3: #ffd66b;
+      --shadow: 0 30px 80px rgba(0,0,0,0.38);
+      --radius: 24px;
+      --radius-lg: 32px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(136,166,255,0.22), transparent 28%),
+        radial-gradient(circle at 100% 0%, rgba(99,230,190,0.16), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(255,214,107,0.08), transparent 18%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      padding: 30px 18px 80px;
+    }
+
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(15,24,48,0.8), rgba(11,18,34,0.74));
+      border: 1px solid var(--line);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(12px);
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .hero::before {
+      width: 260px;
+      height: 260px;
+      right: -60px;
+      top: -80px;
+      background: radial-gradient(circle, rgba(136,166,255,0.26), transparent 65%);
+    }
+
+    .hero::after {
+      width: 220px;
+      height: 220px;
+      left: -60px;
+      bottom: -120px;
+      background: radial-gradient(circle, rgba(99,230,190,0.18), transparent 65%);
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(36px, 5vw, 60px);
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+      max-width: 760px;
+    }
+
+    .sub {
+      max-width: 780px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.75;
+      margin-bottom: 24px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip,
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      text-decoration: none;
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+      font-size: 13px;
+    }
+
+    .button.primary {
+      background: linear-gradient(135deg, rgba(136,166,255,0.22), rgba(99,230,190,0.14));
+      border-color: rgba(136,166,255,0.28);
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .toolbar-card,
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .toolbar-card { padding: 18px 20px; }
+
+    .search {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line-strong);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .search::placeholder { color: var(--soft); }
+
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .quick-links a {
+      color: #dce6ff;
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: var(--panel-2);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 13px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 18px;
+      padding: 18px;
+    }
+
+    .sidebar h2,
+    .content h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .nav {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: var(--muted);
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      background: var(--panel-3);
+      transition: 0.18s ease;
+      font-size: 14px;
+    }
+
+    .nav a:hover {
+      color: var(--text);
+      border-color: var(--line);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .stat-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .stat {
+      padding: 14px;
+      border-radius: 18px;
+      background: var(--panel-2);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--soft);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .content {
+      display: grid;
+      gap: 22px;
+    }
+
+    .section { padding: 24px; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+      margin-top: -2px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .details {
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .details summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 16px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .details summary::-webkit-details-marker { display: none; }
+    .details summary span { color: var(--muted); font-size: 13px; }
+    .details[open] summary { border-bottom: 1px solid rgba(255,255,255,0.06); }
+
+    .details-body {
+      padding: 16px 18px 18px;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    .details-body ul,
+    .project ul,
+    .note-card ul,
+    .pillar ul { margin: 0; padding-left: 18px; }
+
+    .details-body li,
+    .project li,
+    .note-card li,
+    .pillar li { margin-bottom: 6px; }
+
+    .project-grid,
+    .note-grid,
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .project,
+    .note-card,
+    .pillar {
+      padding: 20px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .project h3,
+    .note-card h3,
+    .pillar h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .project p,
+    .project li,
+    .note-card p,
+    .note-card li,
+    .pillar p,
+    .pillar li {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .callout {
+      margin-top: 14px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(136,166,255,0.18);
+      background: linear-gradient(135deg, rgba(136,166,255,0.09), rgba(99,230,190,0.05));
+      color: #dbe5ff;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .footer {
+      color: var(--soft);
+      font-size: 13px;
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+
+    a { color: #d5e0ff; }
+    code {
+      background: rgba(255,255,255,0.06);
+      color: #f2f5ff;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 0.95em;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1020px) {
+      .toolbar,
+      .layout,
+      .project-grid,
+      .note-grid,
+      .pillar-grid {
+        grid-template-columns: 1fr;
+      }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Jarvis • Local Notes Hub</div>
+      <h1>Future Notes Dashboard</h1>
+      <div class="sub">
+        A polished local-first dashboard for your ideas, projects, systems, and long-term notes.
+        Designed to stay spacious, intuitive, and satisfying to use — not cluttered.
+      </div>
+      <div class="hero-actions">
+        <a class="button primary" href="#current-focus">Current focus</a>
+        <a class="button" href="#pillars">Main sections</a>
+        <a class="button" href="#projects">Projects</a>
+        <a class="button" href="#resources">Resources</a>
+        <div class="chip">Local</div>
+        <div class="chip">Minimal</div>
+        <div class="chip">Dashboard-style</div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="toolbar-card">
+        <input id="search" class="search" type="search" placeholder="Search notes, plans, tools, projects, or sections..." />
+      </div>
+      <div class="toolbar-card">
+        <div class="quick-links">
+          <a href="file:///home/kani/.openclaw/workspace/OPERATING_PLAYBOOK.md">Operating playbook</a>
+          <a href="file:///home/kani/.openclaw/workspace/MEMORY.md">Memory</a>
+          <a href="file:///home/kani/.openclaw/workspace/USER.md">Preferences</a>
+          <a href="file:///home/kani/.openclaw/workspace">Workspace</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside class="card sidebar">
+        <h2>Navigation</h2>
+        <nav class="nav">
+          <a href="#current-focus">Current focus</a>
+          <a href="#pillars">Main sections</a>
+          <a href="#voice-jarvis">Voice Jarvis</a>
+          <a href="#projects">Projects</a>
+          <a href="#resources">Resources</a>
+          <a href="#rules">Hub rules</a>
+        </nav>
+
+        <h2>Snapshot</h2>
+        <div class="stat-grid">
+          <div class="stat">
+            <div class="stat-label">Hub file</div>
+            <div class="stat-value"><code>notes/index.html</code></div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Primary active note</div>
+            <div class="stat-value">Voice-enabled Jarvis system</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Use style</div>
+            <div class="stat-value">Clean, spaced out, easy to scan</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Maintenance</div>
+            <div class="stat-value">Jarvis updates this when asked</div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section id="current-focus" class="card section searchable">
+          <div class="section-head">
+            <div>
+              <h2>Current focus</h2>
+              <div class="section-sub">The main thread this hub is centered around right now.</div>
+            </div>
+            <div class="tag-row">
+              <div class="tag">Active</div>
+              <div class="tag">System design</div>
+              <div class="tag">Local-first</div>
+            </div>
+          </div>
+          <div class="callout">
+            Build a fully local, private voice assistant on the Mac: mic → wake word → STT → reasoning brain → task execution, with local-first behavior and only selective fallback when truly needed.
+          </div>
+        </section>
+
+        <section id="pillars" class="card section searchable">
+          <div class="section-head">
+            <div>
+              <h2>Main sections</h2>
+              <div class="section-sub">The structural buckets this hub should grow around.</div>
+            </div>
+          </div>
+          <div class="pillar-grid">
+            <article class="pillar">
+              <h3>Ideas</h3>
+              <p>New concepts, experiments, and big-picture thoughts worth capturing cleanly.</p>
+            </article>
+            <article class="pillar">
+              <h3>Active projects</h3>
+              <p>Major initiatives with enough momentum to deserve ongoing notes and status tracking.</p>
+            </article>
+            <article class="pillar">
+              <h3>School</h3>
+              <p>Assignments, academic planning, important deadlines, and strategic school notes.</p>
+            </article>
+            <article class="pillar">
+              <h3>Automations</h3>
+              <p>OpenClaw systems, recurring tasks, workflows, and assistant behavior changes.</p>
+            </article>
+            <article class="pillar">
+              <h3>Life systems</h3>
+              <p>Habits, routines, accountability systems, and practical operating principles.</p>
+            </article>
+            <article class="pillar">
+              <h3>Reference shelf</h3>
+              <p>Useful tools, links, models, and resources that should stay easy to revisit.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="voice-jarvis" class="card section searchable">
+          <div class="section-head">
+            <div>
+              <h2>Voice Jarvis roadmap</h2>
+              <div class="section-sub">The clean version of the current voice assistant plan.</div>
+            </div>
+          </div>
+
+          <details class="details" open>
+            <summary>Current state <span>What’s done vs next</span></summary>
+            <div class="details-body">
+              <ul>
+                <li><strong>Wake word:</strong> done</li>
+                <li><strong>Speech-to-text:</strong> built, waiting on first fully confirmed run</li>
+                <li><strong>Brain:</strong> not wired yet</li>
+                <li><strong>Voice output / TTS:</strong> not started</li>
+                <li><strong>Task execution:</strong> not started</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="details">
+            <summary>Best next steps <span>Recommended order</span></summary>
+            <div class="details-body">
+              <ul>
+                <li>Finish the STT loop end-to-end.</li>
+                <li>Add local TTS using macOS built-in voices first.</li>
+                <li>Create a simple full conversation loop.</li>
+                <li>Then wire in the assistant brain.</li>
+                <li>Then connect automation/task execution.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="details">
+            <summary>Fastest practical route <span>Working before fancy</span></summary>
+            <div class="details-body">
+              <ul>
+                <li>Confirm wake word + transcript logging.</li>
+                <li>Use <code>say</code> for instant local voice output.</li>
+                <li>Plug transcript text into a routing function.</li>
+                <li>Add richer behavior only after the basic loop feels solid.</li>
+              </ul>
+            </div>
+          </details>
+        </section>
+
+        <section id="projects" class="card section searchable">
+          <div class="section-head">
+            <div>
+              <h2>Projects</h2>
+              <div class="section-sub">A clean project board — enough structure to be useful, without making the page feel busy.</div>
+            </div>
+          </div>
+          <div class="project-grid">
+            <article class="project">
+              <h3>Voice assistant</h3>
+              <p>Main private/local Jarvis system on Mac.</p>
+              <ul>
+                <li>Wake word done</li>
+                <li>STT close to validation</li>
+                <li>TTS next</li>
+              </ul>
+            </article>
+            <article class="project">
+              <h3>Notes hub</h3>
+              <p>This file is the polished front door for future notes and should stay curated.</p>
+              <ul>
+                <li>Local HTML dashboard</li>
+                <li>Jarvis-updated on request</li>
+                <li>Easy to expand later</li>
+              </ul>
+            </article>
+            <article class="project">
+              <h3>Assistant workflows</h3>
+              <p>Model routing, daily automations, behavior rules, and execution habits.</p>
+              <ul>
+                <li>Claude Code = default coding</li>
+                <li>Codex = heavier special tasks</li>
+                <li>Gemma = tabled for now</li>
+              </ul>
+            </article>
+            <article class="project">
+              <h3>Future expansion</h3>
+              <p>Higher-end experience upgrades after the first voice loop works well.</p>
+              <ul>
+                <li>Phone-call style access</li>
+                <li>AirPods / wearable feel</li>
+                <li>Ambient room assistant behavior</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="resources" class="card section searchable">
+          <div class="section-head">
+            <div>
+              <h2>Resources</h2>
+              <div class="section-sub">The short list worth remembering so future execution is faster.</div>
+            </div>
+          </div>
+          <div class="note-grid">
+            <article class="note-card">
+              <h3>Voice output</h3>
+              <ul>
+                <li><code>say</code> on macOS</li>
+                <li>Piper TTS later for a more custom local voice</li>
+              </ul>
+            </article>
+            <article class="note-card">
+              <h3>Speech input</h3>
+              <ul>
+                <li>Faster-Whisper</li>
+                <li>Silero VAD</li>
+                <li>OpenWakeWord</li>
+              </ul>
+            </article>
+            <article class="note-card">
+              <h3>Brain / routing</h3>
+              <ul>
+                <li>OpenClaw as local-first assistant brain</li>
+                <li>Claude fallback only when truly needed</li>
+              </ul>
+            </article>
+            <article class="note-card">
+              <h3>Maintenance style</h3>
+              <ul>
+                <li>Keep this hub curated</li>
+                <li>Use polished notes, not raw dumps</li>
+                <li>Prefer clarity over density</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="rules" class="card section searchable">
+          <div class="section-head">
+            <div>
+              <h2>Hub rules</h2>
+              <div class="section-sub">How this should stay useful over time.</div>
+            </div>
+          </div>
+          <div class="callout">
+            This hub should stay spacious, intuitive, and pleasant to use. It should feel like a polished personal dashboard, not a cluttered document. Jarvis should keep sections organized, avoid overcrowding, and update it whenever Mr. Kani asks.
+          </div>
+          <div class="footer">
+            This version adds clearer structure for ideas, active projects, school, automations, and life systems while keeping the page easy to navigate.
+          </div>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <script>
+    const search = document.getElementById('search');
+    const blocks = Array.from(document.querySelectorAll('.searchable'));
+
+    search.addEventListener('input', () => {
+      const q = search.value.trim().toLowerCase();
+      blocks.forEach(block => {
+        const text = block.innerText.toLowerCase();
+        block.classList.toggle('hidden', q && !text.includes(q));
+      });
+    });
+  </script>
+</body>
+</html>
