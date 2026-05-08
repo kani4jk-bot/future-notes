@@ -4,599 +4,960 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Future Notes</title>
-  <meta name="description" content="A polished personal dashboard for Jarvis-managed notes, plans, systems, and projects." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f7f6f3;
-      --bg-2: #efede8;
-      --surface: rgba(255,255,255,0.88);
-      --surface-2: rgba(255,255,255,0.78);
-      --surface-3: rgba(248,247,243,0.9);
-      --text: #202124;
-      --muted: #5f6368;
-      --soft: #8a8f98;
-      --line: rgba(15,23,42,0.08);
-      --line-2: rgba(15,23,42,0.12);
-      --accent: #2f6feb;
-      --accent-2: #0f9d58;
-      --accent-3: #e0b341;
-      --shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
-      --radius: 22px;
-      --radius-lg: 30px;
-      --max: 1280px;
+      --bg: #09090f;
+      --bg-2: #0f0f1a;
+      --surface: #141421;
+      --surface-2: #1c1c2e;
+      --border: rgba(255,255,255,0.07);
+      --border-2: rgba(255,255,255,0.13);
+      --text: #e8e8f0;
+      --muted: #9090b0;
+      --soft: #55556a;
+      --accent: #7c6ef5;
+      --accent-2: #10b981;
+      --accent-3: #f59e0b;
+      --accent-red: #ef4444;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --sidebar-w: 228px;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
       color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(47,111,235,0.05), transparent 22%),
-        radial-gradient(circle at bottom right, rgba(15,157,88,0.04), transparent 18%),
-        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .shell {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 26px 18px 80px;
+    /* ── App shell ── */
+    .app {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) minmax(0,1fr);
+      grid-template-rows: 50px 1fr;
+      grid-template-areas: "sidebar topbar" "sidebar main";
+      min-height: 100vh;
     }
 
+    /* ── Topbar ── */
     .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
-      padding: 12px 14px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.78);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-radius: 18px;
-      position: sticky;
-      top: 12px;
-      z-index: 20;
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
-    }
-
-    .brand {
+      grid-area: topbar;
       display: flex;
       align-items: center;
       gap: 12px;
-      min-width: 0;
+      padding: 0 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-2);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    .brand-badge {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      background: linear-gradient(180deg, #ffffff 0%, #f0efe9 100%);
+    .search-trigger {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 13px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--soft);
+      transition: border-color .15s, background .15s;
+      flex: 1;
+      max-width: 380px;
+      font-family: inherit;
+    }
+    .search-trigger:hover { border-color: var(--border-2); background: var(--surface-2); }
+
+    .kbd-hint {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--soft);
+      background: rgba(255,255,255,0.05);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    .top-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all .15s;
+      text-decoration: none;
+      font-family: inherit;
+    }
+    .btn-ghost { background: transparent; color: var(--muted); }
+    .btn-ghost:hover { background: var(--surface); color: var(--text); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.12); }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      grid-area: sidebar;
+      background: var(--bg-2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      border-bottom: 1px solid var(--border);
+      height: 50px;
+      flex-shrink: 0;
+    }
+
+    .brand-icon {
+      width: 26px;
+      height: 26px;
+      background: linear-gradient(135deg, var(--accent), #9b59b6);
+      border-radius: 7px;
       display: grid;
       place-items: center;
-      border: 1px solid var(--line);
+      font-size: 13px;
       font-weight: 700;
-      color: #111827;
+      color: #fff;
+      flex-shrink: 0;
     }
 
-    .eyebrow {
-      font-size: 11px;
-      letter-spacing: 0.14em;
+    .brand-name { font-size: 14px; font-weight: 600; color: var(--text); }
+
+    .sb-section { padding: 18px 8px 6px; }
+
+    .sb-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .1em;
       text-transform: uppercase;
       color: var(--soft);
+      padding: 0 6px;
       margin-bottom: 3px;
     }
 
-    .brand-title {
-      font-size: 16px;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .top-actions {
+    .nav-item {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: flex-end;
-    }
-
-    .button,
-    .pill {
-      border: 1px solid var(--line);
-      background: #fff;
-      color: var(--text);
-      text-decoration: none;
-      padding: 10px 13px;
-      border-radius: 999px;
-      font-size: 13px;
-      display: inline-flex;
       align-items: center;
       gap: 8px;
-    }
-
-    .button.primary {
-      background: #111827;
-      color: #fff;
-      border-color: #111827;
-    }
-
-    .hero {
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, #ffffff 0%, #faf9f6 100%);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      padding: 34px;
-      margin-bottom: 22px;
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.35fr 0.9fr;
-      gap: 24px;
-    }
-
-    .hero h1 {
-      margin: 8px 0 12px;
-      font-size: clamp(36px, 6vw, 64px);
-      line-height: 1.02;
-      letter-spacing: -0.05em;
-      max-width: 760px;
-    }
-
-    .hero p {
-      margin: 0 0 22px;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.75;
-      max-width: 740px;
-    }
-
-    .hero-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .glass-card {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.74);
-      border-radius: 18px;
-      padding: 18px;
-    }
-
-    .mini-stats {
-      display: grid;
-      gap: 12px;
-      align-content: start;
-    }
-
-    .mini-stat-label,
-    .stack-label {
-      color: var(--soft);
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    .mini-stat-value,
-    .stack-value {
-      font-size: 15px;
-      color: var(--text);
-      line-height: 1.55;
-    }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: 1.35fr 1fr;
-      gap: 16px;
-      margin-bottom: 22px;
-    }
-
-    .panel,
-    .section,
-    .sidebar-card {
-      border: 1px solid var(--line);
-      background: var(--surface);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .panel { padding: 18px 20px; }
-
-    .search {
-      width: 100%;
-      border: 1px solid var(--line-2);
-      background: #fff;
-      color: var(--text);
-      padding: 14px 16px;
-      border-radius: 16px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .search::placeholder { color: var(--soft); }
-
-    .quick-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .quick-links a {
-      color: #2b2f36;
-      text-decoration: none;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: #fff;
-      border: 1px solid var(--line);
+      padding: 6px 8px;
+      border-radius: 6px;
       font-size: 13px;
-    }
-
-    .main {
-      display: grid;
-      grid-template-columns: 290px minmax(0, 1fr);
-      gap: 22px;
-      align-items: start;
-    }
-
-    .sidebar {
-      position: sticky;
-      top: 84px;
-      display: grid;
-      gap: 16px;
-    }
-
-    .sidebar-card {
-      padding: 18px;
-    }
-
-    h2 {
-      margin: 0 0 14px;
-      font-size: 18px;
-      letter-spacing: -0.02em;
-    }
-
-    .nav {
-      display: grid;
-      gap: 10px;
-    }
-
-    .nav a {
-      text-decoration: none;
       color: var(--muted);
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: rgba(250,249,246,0.9);
-      border: 1px solid transparent;
-      font-size: 14px;
-      transition: 0.18s ease;
+      text-decoration: none;
+      transition: all .12s;
+      cursor: pointer;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+    .nav-item.active { background: rgba(124,110,245,0.12); color: var(--accent); }
+
+    .nav-count {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--soft);
+      background: rgba(255,255,255,0.05);
+      padding: 1px 6px;
+      border-radius: 999px;
     }
 
-    .nav a:hover {
-      color: var(--text);
-      border-color: var(--line);
-      background: #fff;
+    .sb-footer {
+      margin-top: auto;
+      padding: 10px 8px;
+      border-top: 1px solid var(--border);
     }
 
-    .stack {
-      display: grid;
-      gap: 10px;
+    /* ── Main ── */
+    .main {
+      grid-area: main;
+      padding: 36px 40px 80px;
+      max-width: 880px;
     }
 
-    .stack-item {
-      padding: 14px;
-      border-radius: 16px;
-      background: rgba(250,249,246,0.95);
-      border: 1px solid var(--line);
-    }
-
-    .content {
-      display: grid;
-      gap: 22px;
-    }
-
-    .section {
-      padding: 24px;
-    }
-
-    .section-head {
+    /* ── Focus banner ── */
+    .focus-banner {
       display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 20px 22px;
+      background: linear-gradient(135deg, rgba(124,110,245,.1), rgba(16,185,129,.06));
+      border: 1px solid rgba(124,110,245,.2);
+      border-radius: var(--radius-lg);
+      margin-bottom: 36px;
+    }
+
+    .focus-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--accent), #9b59b6);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .focus-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 3px;
+    }
+
+    .focus-value { font-size: 15px; font-weight: 600; color: var(--text); }
+
+    /* ── Sections ── */
+    .section { margin-bottom: 44px; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
       margin-bottom: 14px;
     }
 
-    .section-sub {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.68;
+    .section-title-group { display: flex; align-items: center; gap: 9px; }
+    .section-title { font-size: 15px; font-weight: 600; color: var(--text); }
+
+    .section-count {
+      font-size: 11px;
+      color: var(--soft);
+      background: rgba(255,255,255,0.05);
+      padding: 2px 8px;
+      border-radius: 999px;
     }
 
-    .tags {
+    .section-actions { display: flex; gap: 4px; }
+
+    .icon-btn {
+      width: 27px; height: 27px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--soft);
+      cursor: pointer;
+      transition: all .12s;
+    }
+    .icon-btn:hover { background: var(--surface); color: var(--text); }
+
+    /* ── Card grid ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 10px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: border-color .15s, transform .15s;
+      position: relative;
+    }
+    .card:hover { border-color: var(--border-2); transform: translateY(-1px); }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
       gap: 8px;
     }
 
+    .card-body { font-size: 12px; color: var(--muted); line-height: 1.65; }
+
+    .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 11px; }
+
     .tag {
-      padding: 8px 10px;
+      font-size: 11px;
+      padding: 2px 7px;
       border-radius: 999px;
-      background: #fff;
-      border: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 12px;
+      border: 1px solid var(--border);
+      color: var(--soft);
     }
+    .tag-accent { border-color: rgba(124,110,245,.3); color: var(--accent); background: rgba(124,110,245,.08); }
+    .tag-green  { border-color: rgba(16,185,129,.3);  color: var(--accent-2); background: rgba(16,185,129,.08); }
+    .tag-amber  { border-color: rgba(245,158,11,.3);  color: var(--accent-3); background: rgba(245,158,11,.08); }
 
+    /* ── Status dot ── */
+    .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot-active   { background: var(--accent-2); box-shadow: 0 0 0 2px rgba(16,185,129,.2); }
+    .dot-progress { background: var(--accent-3); box-shadow: 0 0 0 2px rgba(245,158,11,.2); }
+    .dot-planned  { background: var(--soft); }
+
+    /* ── Progress bar ── */
+    .progress-row { display: flex; align-items: center; gap: 9px; margin-top: 9px; }
+    .progress-bar { flex: 1; height: 3px; background: rgba(255,255,255,.07); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 99px; background: var(--accent); }
+    .progress-lbl { font-size: 10px; color: var(--soft); min-width: 28px; text-align: right; }
+
+    /* ── Callout ── */
     .callout {
-      margin-top: 14px;
-      padding: 17px 18px;
-      border-radius: 18px;
-      border: 1px solid rgba(47,111,235,0.12);
-      background: linear-gradient(180deg, rgba(47,111,235,0.05), rgba(255,255,255,0.82));
-      color: #1f2937;
-      line-height: 1.72;
-      font-size: 15px;
-    }
-
-    .grid-2,
-    .grid-3 {
-      display: grid;
-      gap: 16px;
-      margin-top: 16px;
-    }
-
-    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-
-    .card-lite {
-      padding: 20px;
-      border-radius: 18px;
-      background: #fff;
-      border: 1px solid var(--line);
-    }
-
-    .card-lite h3 {
-      margin: 0 0 8px;
-      font-size: 16px;
-      letter-spacing: -0.02em;
-    }
-
-    p, li {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 15px 18px;
+      font-size: 13px;
       color: var(--muted);
-      font-size: 14px;
-      line-height: 1.72;
+      line-height: 1.7;
     }
 
-    ul { margin: 0; padding-left: 18px; }
+    /* ── Accordions ── */
+    .accordions { display: grid; gap: 7px; }
 
     .accordion {
-      margin-top: 14px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       overflow: hidden;
-      background: rgba(255,255,255,0.82);
     }
 
-    .accordion summary {
-      list-style: none;
-      cursor: pointer;
-      padding: 16px 18px;
+    .acc-trigger {
+      width: 100%;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
+      padding: 13px 16px;
+      font-size: 13px;
+      font-weight: 500;
       color: var(--text);
-      font-size: 15px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      transition: background .12s;
+      font-family: inherit;
     }
+    .acc-trigger:hover { background: rgba(255,255,255,.03); }
 
-    .accordion summary span {
-      color: var(--muted);
-      font-size: 13px;
-    }
+    .acc-meta { font-size: 12px; color: var(--soft); font-weight: 400; }
 
-    .accordion summary::-webkit-details-marker { display: none; }
-    .accordion[open] summary { border-bottom: 1px solid var(--line); }
-
-    .accordion-body {
-      padding: 16px 18px 18px;
-    }
-
-    .footer-note {
+    .acc-chevron {
+      margin-left: auto;
       color: var(--soft);
+      transition: transform .2s;
+      flex-shrink: 0;
+    }
+    .accordion.open .acc-chevron { transform: rotate(90deg); }
+
+    .acc-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .3s cubic-bezier(.4,0,.2,1);
+    }
+    .accordion.open .acc-body { max-height: 400px; }
+
+    .acc-inner {
+      padding: 4px 16px 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .acc-inner ul { padding-left: 16px; }
+    .acc-inner li { font-size: 13px; color: var(--muted); line-height: 1.75; padding: 2px 0; }
+
+    /* ── Note cards (user-created) ── */
+    .note-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      position: relative;
+      transition: border-color .15s;
+      animation: fadein .25s ease;
+    }
+    .note-card:hover { border-color: var(--border-2); }
+
+    .note-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+    .note-title  { font-size: 13px; font-weight: 600; color: var(--text); }
+    .note-date   { font-size: 10px; color: var(--soft); flex-shrink: 0; }
+    .note-text   { font-size: 12px; color: var(--muted); line-height: 1.65; white-space: pre-wrap; }
+
+    .note-del {
+      position: absolute;
+      top: 9px; right: 9px;
+      width: 20px; height: 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 4px;
+      background: transparent;
+      border: none;
+      color: var(--soft);
+      cursor: pointer;
+      opacity: 0;
+      transition: all .12s;
+    }
+    .note-card:hover .note-del { opacity: 1; }
+    .note-del:hover { background: rgba(239,68,68,.15); color: var(--accent-red); }
+
+    /* ── Empty state ── */
+    .notes-empty {
+      padding: 28px;
+      text-align: center;
+      color: var(--soft);
+      font-size: 12px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+
+    /* ── Summary card ── */
+    .summary-card {
+      background: rgba(124,110,245,.06);
+      border: 1px solid rgba(124,110,245,.15);
+      border-radius: var(--radius);
+      padding: 15px 18px;
+      margin-top: 12px;
       font-size: 13px;
-      line-height: 1.6;
-      margin-top: 8px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .summary-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
     }
 
+    /* ── Divider ── */
+    .divider { height: 1px; background: var(--border); margin: 36px 0; }
+
+    /* ── Command Palette ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 110px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s;
+    }
+    .overlay.open { opacity: 1; pointer-events: all; }
+
+    .palette {
+      width: 560px;
+      max-width: calc(100vw - 32px);
+      background: var(--bg-2);
+      border: 1px solid var(--border-2);
+      border-radius: 13px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,.7);
+      transform: translateY(-6px) scale(.98);
+      transition: transform .15s;
+    }
+    .overlay.open .palette { transform: translateY(0) scale(1); }
+
+    .palette-search {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .palette-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      color: var(--text);
+      font-family: inherit;
+    }
+    .palette-input::placeholder { color: var(--soft); }
+
+    .palette-results { max-height: 340px; overflow-y: auto; }
+
+    .p-result {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 18px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background .1s;
+    }
+    .p-result:hover, .p-result.sel { background: rgba(255,255,255,.05); color: var(--text); }
+    .p-result-desc { font-size: 11px; color: var(--soft); margin-left: auto; }
+
+    .palette-footer {
+      display: flex;
+      gap: 14px;
+      padding: 9px 18px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--soft);
+    }
+    .pf-item { display: flex; align-items: center; gap: 4px; }
+    .kkey {
+      background: rgba(255,255,255,.07);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+
+    /* ── New Note Modal ── */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s;
+    }
+    .modal-bg.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      width: 520px;
+      max-width: 100%;
+      background: var(--bg-2);
+      border: 1px solid var(--border-2);
+      border-radius: 14px;
+      padding: 26px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.7);
+      transform: scale(.97);
+      transition: transform .15s;
+    }
+    .modal-bg.open .modal { transform: scale(1); }
+
+    .modal-title { font-size: 17px; font-weight: 600; margin-bottom: 20px; }
+
+    .fg { margin-bottom: 14px; }
+    .flabel {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+
+    .finput, .ftextarea, .fselect {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 9px 13px;
+      font-size: 13px;
+      color: var(--text);
+      font-family: inherit;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .finput:focus, .ftextarea:focus, .fselect:focus { border-color: var(--accent); }
+    .finput::placeholder, .ftextarea::placeholder { color: var(--soft); }
+    .ftextarea { resize: vertical; min-height: 96px; line-height: 1.6; }
+    .fselect { cursor: pointer; }
+
+    .classify-hint {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 12px;
+      background: rgba(124,110,245,.08);
+      border: 1px solid rgba(124,110,245,.2);
+      border-radius: 7px;
+      font-size: 12px;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+
+    /* ── Misc ── */
     code {
-      background: rgba(15,23,42,0.06);
-      color: #111827;
-      padding: 2px 8px;
-      border-radius: 8px;
-      font-size: 0.95em;
+      font-size: 12px;
+      background: rgba(255,255,255,.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
     }
-
-    a { color: #2559c9; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
     .hidden { display: none !important; }
 
-    @media (max-width: 1080px) {
-      .hero-grid,
-      .toolbar,
-      .main,
-      .grid-2,
-      .grid-3 {
-        grid-template-columns: 1fr;
-      }
-      .sidebar { position: static; }
-      .topbar { position: static; }
+    @keyframes fadein { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 99px; }
+
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; grid-template-areas: "topbar" "main"; }
+      .sidebar { display: none; }
+      .main { padding: 20px 16px 60px; }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-badge">J</div>
-        <div>
-          <div class="eyebrow">Jarvis • Hosted Notes</div>
-          <div class="brand-title">Future Notes Dashboard</div>
-        </div>
-      </div>
-      <div class="top-actions">
-        <a class="button primary" href="#current-focus">Current focus</a>
-        <a class="button" href="#projects">Projects</a>
-        <a class="button" href="#resources">Resources</a>
-      </div>
-    </header>
+<div class="app">
 
-    <section class="hero">
-      <div class="hero-grid">
-        <div>
-          <div class="eyebrow">Notion-inspired polish</div>
-          <h1>Cleaner, softer, and more document-like — but still premium.</h1>
-          <p>
-            This version pushes the dashboard closer to a refined Notion feel: lighter palette, softer surfaces,
-            cleaner content blocks, and a calmer reading experience on both phone and desktop.
-          </p>
-          <div class="hero-chips">
-            <div class="pill">Notion-inspired</div>
-            <div class="pill">Phone-friendly</div>
-            <div class="pill">Calm UI</div>
-            <div class="pill">Easy to scan</div>
-          </div>
+  <!-- ── Sidebar ── -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">J</div>
+      <div class="brand-name">Future Notes</div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Workspace</div>
+      <a class="nav-item active" href="#">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+        All notes
+      </a>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Sections</div>
+      <a class="nav-item" href="#ideas">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2a4 4 0 014 4c0 1.5-.8 2.8-2 3.5V11a1 1 0 01-1 1H7a1 1 0 01-1-1V9.5A4 4 0 014 6a4 4 0 014-4z"/><path d="M7 13h2"/></svg>
+        Ideas
+        <span class="nav-count" id="nc-ideas">0</span>
+      </a>
+      <a class="nav-item" href="#projects">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="12" height="9" rx="1"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/></svg>
+        Active projects
+        <span class="nav-count" id="nc-projects">—</span>
+      </a>
+      <a class="nav-item" href="#school">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2L2 6l6 4 6-4-6-4z"/><path d="M4 8v4c0 1 1.5 2 4 2s4-1 4-2V8"/></svg>
+        School
+        <span class="nav-count" id="nc-school">0</span>
+      </a>
+      <a class="nav-item" href="#automations">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8a5 5 0 0110 0"/><path d="M8 3v2M12.2 4.8l-1.4 1.4M13 8h-2M3 8H1M4.8 4.8l1.4 1.4"/><path d="M8 11v2"/></svg>
+        Automations
+        <span class="nav-count" id="nc-automations">0</span>
+      </a>
+      <a class="nav-item" href="#life-systems">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Life systems
+        <span class="nav-count" id="nc-life-systems">0</span>
+      </a>
+      <a class="nav-item" href="#reference">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h8v2H4zM4 6h8v2H4zM4 10h5v2H4z"/></svg>
+        Reference shelf
+        <span class="nav-count" id="nc-reference">—</span>
+      </a>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Pinned</div>
+      <a class="nav-item" href="#voice-jarvis">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2a3 3 0 013 3v3a3 3 0 01-6 0V5a3 3 0 013-3z"/><path d="M4 9a4 4 0 008 0M8 13v2M6 15h4"/></svg>
+        Voice Jarvis
+      </a>
+    </div>
+
+    <div class="sb-footer">
+      <button class="btn btn-ghost" style="width:100%;justify-content:flex-start;font-size:13px" onclick="openNewNote()">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M3 8h10"/></svg>
+        New note
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Topbar ── -->
+  <header class="topbar">
+    <button class="search-trigger" onclick="openPalette()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M12 12l2.5 2.5"/></svg>
+      Search notes...
+      <span class="kbd-hint">⌘K</span>
+    </button>
+    <div class="top-actions">
+      <button class="btn btn-primary" onclick="openNewNote()">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M3 8h10"/></svg>
+        New note
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Main ── -->
+  <main class="main">
+
+    <!-- Focus banner -->
+    <div class="focus-banner">
+      <div class="focus-icon">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8"><path d="M8 2a3 3 0 013 3v3a3 3 0 01-6 0V5a3 3 0 013-3z"/><path d="M4 9a4 4 0 008 0M8 13v2M6 15h4"/></svg>
+      </div>
+      <div>
+        <div class="focus-label">Current focus</div>
+        <div class="focus-value">Build a fully local, private voice assistant on the Mac</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:6px;flex-shrink:0">
+        <span class="tag tag-green">Active</span>
+        <span class="tag">Local-first</span>
+      </div>
+    </div>
+
+    <!-- ── Ideas ── -->
+    <section id="ideas" class="section searchable">
+      <div class="section-header">
+        <div class="section-title-group">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--accent-3)"><path d="M8 2a4 4 0 014 4c0 1.5-.8 2.8-2 3.5V11a1 1 0 01-1 1H7a1 1 0 01-1-1V9.5A4 4 0 014 6a4 4 0 014-4z"/><path d="M7 13h2"/></svg>
+          <span class="section-title">Ideas</span>
+          <span class="section-count" id="dc-ideas">0 notes</span>
         </div>
-        <div class="mini-stats">
-          <div class="glass-card">
-            <div class="mini-stat-label">Current main thread</div>
-            <div class="mini-stat-value">Voice-enabled Jarvis system</div>
-          </div>
-          <div class="glass-card">
-            <div class="mini-stat-label">Maintenance rule</div>
-            <div class="mini-stat-value">Jarvis updates this dashboard on request.</div>
-          </div>
-          <div class="glass-card">
-            <div class="mini-stat-label">Design direction</div>
-            <div class="mini-stat-value">Professional, spacious, intuitive, and closer to a polished workspace product.</div>
-          </div>
+        <div class="section-actions">
+          <button class="icon-btn" title="Add idea" onclick="openNewNote('ideas')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M3 8h10"/></svg>
+          </button>
+          <button class="icon-btn" title="Summarize section" onclick="toggleSummary('ideas')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M3 8h7M3 12h5"/></svg>
+          </button>
         </div>
       </div>
+      <div class="card-grid" id="notes-ideas"></div>
+      <div id="summary-ideas" class="hidden"></div>
+      <div id="empty-ideas" class="notes-empty">No ideas yet — press <strong>N</strong> or click + to add one.</div>
     </section>
 
-    <section class="toolbar">
-      <div class="panel">
-        <input id="search" class="search" type="search" placeholder="Search notes, projects, systems, or resources..." />
-      </div>
-      <div class="panel">
-        <div class="quick-links">
-          <a href="https://github.com/kani4jk-bot/future-notes" target="_blank" rel="noreferrer">GitHub repo</a>
-          <a href="#rules">Hub rules</a>
-          <a href="#voice-jarvis">Voice roadmap</a>
-          <a href="#pillars">Main sections</a>
+    <div class="divider"></div>
+
+    <!-- ── Active Projects ── -->
+    <section id="projects" class="section searchable">
+      <div class="section-header">
+        <div class="section-title-group">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--accent)"><rect x="2" y="4" width="12" height="9" rx="1"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/></svg>
+          <span class="section-title">Active Projects</span>
+        </div>
+        <div class="section-actions">
+          <button class="icon-btn" title="Add note" onclick="openNewNote('projects')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M3 8h10"/></svg>
+          </button>
+          <button class="icon-btn" title="Summarize" onclick="toggleSummary('projects')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M3 8h7M3 12h5"/></svg>
+          </button>
         </div>
       </div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title"><span class="dot dot-active"></span>Voice assistant</div>
+          <div class="card-body">Main private/local Jarvis system on Mac.</div>
+          <div class="progress-row">
+            <div class="progress-bar"><div class="progress-fill" style="width:35%"></div></div>
+            <span class="progress-lbl">35%</span>
+          </div>
+          <div class="card-tags">
+            <span class="tag">Wake word ✓</span><span class="tag">STT next</span><span class="tag tag-accent">In progress</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="dot dot-active"></span>Notes hub</div>
+          <div class="card-body">Polished front door for future-facing notes. Hosted, Jarvis-updated.</div>
+          <div class="progress-row">
+            <div class="progress-bar"><div class="progress-fill" style="width:70%"></div></div>
+            <span class="progress-lbl">70%</span>
+          </div>
+          <div class="card-tags"><span class="tag">Hosted</span><span class="tag tag-green">Live</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="dot dot-progress"></span>Assistant workflows</div>
+          <div class="card-body">Model routing, recurring automations, and operating behavior.</div>
+          <div class="card-tags">
+            <span class="tag">Claude Code</span><span class="tag">Codex</span><span class="tag tag-amber">Configured</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="dot dot-planned"></span>Future expansion</div>
+          <div class="card-body">Phone-call access, AirPods feel, ambient room assistant behavior.</div>
+          <div class="card-tags"><span class="tag">Planned</span></div>
+        </div>
+      </div>
+      <div class="card-grid" id="notes-projects" style="margin-top:10px"></div>
+      <div id="summary-projects" class="hidden"></div>
     </section>
 
-    <section class="main">
-      <aside class="sidebar">
-        <div class="sidebar-card">
-          <h2>Navigation</h2>
-          <nav class="nav">
-            <a href="#current-focus">Current focus</a>
-            <a href="#pillars">Main sections</a>
-            <a href="#voice-jarvis">Voice Jarvis</a>
-            <a href="#projects">Projects</a>
-            <a href="#resources">Resources</a>
-            <a href="#rules">Hub rules</a>
-          </nav>
+    <div class="divider"></div>
+
+    <!-- ── School ── -->
+    <section id="school" class="section searchable">
+      <div class="section-header">
+        <div class="section-title-group">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--accent-2)"><path d="M8 2L2 6l6 4 6-4-6-4z"/><path d="M4 8v4c0 1 1.5 2 4 2s4-1 4-2V8"/></svg>
+          <span class="section-title">School</span>
+          <span class="section-count" id="dc-school">0 notes</span>
         </div>
-
-        <div class="sidebar-card">
-          <h2>Snapshot</h2>
-          <div class="stack">
-            <div class="stack-item">
-              <div class="stack-label">Primary use</div>
-              <div class="stack-value">Curated future-facing notes</div>
-            </div>
-            <div class="stack-item">
-              <div class="stack-label">Main active note</div>
-              <div class="stack-value">Voice assistant buildout</div>
-            </div>
-            <div class="stack-item">
-              <div class="stack-label">Style target</div>
-              <div class="stack-value">Notion-leaning, clean, not cluttered</div>
-            </div>
-          </div>
+        <div class="section-actions">
+          <button class="icon-btn" title="Add note" onclick="openNewNote('school')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M3 8h10"/></svg>
+          </button>
+          <button class="icon-btn" title="Summarize" onclick="toggleSummary('school')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M3 8h7M3 12h5"/></svg>
+          </button>
         </div>
-      </aside>
+      </div>
+      <div class="card-grid" id="notes-school"></div>
+      <div id="summary-school" class="hidden"></div>
+      <div id="empty-school" class="notes-empty">No school notes yet. Add deadlines, plans, or strategy.</div>
+    </section>
 
-      <main class="content">
-        <section id="current-focus" class="section searchable">
-          <div class="section-head">
-            <div>
-              <h2>Current focus</h2>
-              <div class="section-sub">The main thread this dashboard is centered around right now.</div>
-            </div>
-            <div class="tags">
-              <div class="tag">Active</div>
-              <div class="tag">Private/local-first</div>
-              <div class="tag">System design</div>
-            </div>
-          </div>
-          <div class="callout">
-            Build a fully local, private voice assistant on the Mac: mic → wake word → STT → reasoning brain → task execution, with local-first behavior and only selective fallback when truly needed.
-          </div>
-        </section>
+    <div class="divider"></div>
 
-        <section id="pillars" class="section searchable">
-          <div class="section-head">
-            <div>
-              <h2>Main sections</h2>
-              <div class="section-sub">The structure this dashboard should grow around over time.</div>
-            </div>
-          </div>
-          <div class="grid-3">
-            <article class="card-lite"><h3>Ideas</h3><p>Big concepts, experiments, and future moves worth keeping polished.</p></article>
-            <article class="card-lite"><h3>Active projects</h3><p>Major initiatives with enough momentum to deserve ongoing notes.</p></article>
-            <article class="card-lite"><h3>School</h3><p>Important academic planning, deadlines, and strategy notes.</p></article>
-            <article class="card-lite"><h3>Automations</h3><p>OpenClaw systems, recurring tasks, workflows, and assistant changes.</p></article>
-            <article class="card-lite"><h3>Life systems</h3><p>Habits, routines, accountability systems, and practical operating rules.</p></article>
-            <article class="card-lite"><h3>Reference shelf</h3><p>Useful tools, links, and resources that should stay easy to revisit.</p></article>
-          </div>
-        </section>
+    <!-- ── Automations ── -->
+    <section id="automations" class="section searchable">
+      <div class="section-header">
+        <div class="section-title-group">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:#a78bfa"><path d="M3 8a5 5 0 0110 0"/><path d="M8 3v2M13 8h-2M3 8H1"/></svg>
+          <span class="section-title">Automations</span>
+          <span class="section-count" id="dc-automations">0 notes</span>
+        </div>
+        <div class="section-actions">
+          <button class="icon-btn" title="Add note" onclick="openNewNote('automations')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M3 8h10"/></svg>
+          </button>
+          <button class="icon-btn" title="Summarize" onclick="toggleSummary('automations')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M3 8h7M3 12h5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="card-grid" id="notes-automations"></div>
+      <div id="summary-automations" class="hidden"></div>
+      <div id="empty-automations" class="notes-empty">No automations logged yet. Add OpenClaw systems, workflows, or triggers.</div>
+    </section>
 
-        <section id="voice-jarvis" class="section searchable">
-          <div class="section-head">
-            <div>
-              <h2>Voice Jarvis roadmap</h2>
-              <div class="section-sub">A cleaner breakdown of the current voice assistant plan.</div>
-            </div>
-          </div>
+    <div class="divider"></div>
 
-          <details class="accordion" open>
-            <summary>Current state <span>What’s done vs next</span></summary>
-            <div class="accordion-body">
+    <!-- ── Life Systems ── -->
+    <section id="life-systems" class="section searchable">
+      <div class="section-header">
+        <div class="section-title-group">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--accent-2)"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+          <span class="section-title">Life Systems</span>
+          <span class="section-count" id="dc-life-systems">0 notes</span>
+        </div>
+        <div class="section-actions">
+          <button class="icon-btn" title="Add note" onclick="openNewNote('life-systems')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M3 8h10"/></svg>
+          </button>
+          <button class="icon-btn" title="Summarize" onclick="toggleSummary('life-systems')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M3 8h7M3 12h5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="card-grid" id="notes-life-systems"></div>
+      <div id="summary-life-systems" class="hidden"></div>
+      <div id="empty-life-systems" class="notes-empty">No life systems yet. Add habits, routines, or operating rules.</div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ── Reference Shelf ── -->
+    <section id="reference" class="section searchable">
+      <div class="section-header">
+        <div class="section-title-group">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--muted)"><path d="M4 2h8v2H4zM4 6h8v2H4zM4 10h5v2H4z"/></svg>
+          <span class="section-title">Reference Shelf</span>
+        </div>
+        <div class="section-actions">
+          <button class="icon-btn" title="Add note" onclick="openNewNote('reference')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M3 8h10"/></svg>
+          </button>
+          <button class="icon-btn" title="Summarize" onclick="toggleSummary('reference')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M3 8h7M3 12h5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">Voice output</div>
+          <div class="card-body"><code>say</code> on macOS — instant, no deps. Piper TTS later for a custom local voice.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Speech input</div>
+          <div class="card-body">Faster-Whisper · Silero VAD · OpenWakeWord</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Brain / routing</div>
+          <div class="card-body">OpenClaw as local-first brain. Claude fallback only when truly needed.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Maintenance style</div>
+          <div class="card-body">Curated over cluttered. Polished notes, not raw dumps. Clarity over density.</div>
+        </div>
+      </div>
+      <div class="card-grid" id="notes-reference" style="margin-top:10px"></div>
+      <div id="summary-reference" class="hidden"></div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ── Voice Jarvis Roadmap ── -->
+    <section id="voice-jarvis" class="section searchable">
+      <div class="section-header">
+        <div class="section-title-group">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--accent)"><path d="M8 2a3 3 0 013 3v3a3 3 0 01-6 0V5a3 3 0 013-3z"/><path d="M4 9a4 4 0 008 0M8 13v2M6 15h4"/></svg>
+          <span class="section-title">Voice Jarvis Roadmap</span>
+        </div>
+      </div>
+      <div class="accordions">
+        <div class="accordion open" id="acc-state">
+          <button class="acc-trigger" onclick="toggleAcc('acc-state')">
+            Current state
+            <span class="acc-meta">What's done vs next</span>
+            <svg class="acc-chevron" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+          </button>
+          <div class="acc-body">
+            <div class="acc-inner">
               <ul>
-                <li><strong>Wake word:</strong> done</li>
+                <li><strong>Wake word:</strong> done ✓</li>
                 <li><strong>Speech-to-text:</strong> built, waiting on first fully confirmed run</li>
                 <li><strong>Brain:</strong> not wired yet</li>
                 <li><strong>Voice output / TTS:</strong> not started</li>
                 <li><strong>Task execution:</strong> not started</li>
               </ul>
             </div>
-          </details>
-
-          <details class="accordion">
-            <summary>Best next steps <span>Recommended order</span></summary>
-            <div class="accordion-body">
+          </div>
+        </div>
+        <div class="accordion" id="acc-next">
+          <button class="acc-trigger" onclick="toggleAcc('acc-next')">
+            Best next steps
+            <span class="acc-meta">Recommended order</span>
+            <svg class="acc-chevron" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+          </button>
+          <div class="acc-body">
+            <div class="acc-inner">
               <ul>
                 <li>Finish the STT loop end-to-end.</li>
                 <li>Add local TTS using macOS built-in voices first.</li>
@@ -605,11 +966,16 @@
                 <li>Then connect automation/task execution.</li>
               </ul>
             </div>
-          </details>
-
-          <details class="accordion">
-            <summary>Fastest practical route <span>Working before fancy</span></summary>
-            <div class="accordion-body">
+          </div>
+        </div>
+        <div class="accordion" id="acc-fast">
+          <button class="acc-trigger" onclick="toggleAcc('acc-fast')">
+            Fastest practical route
+            <span class="acc-meta">Working before fancy</span>
+            <svg class="acc-chevron" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+          </button>
+          <div class="acc-body">
+            <div class="acc-inner">
               <ul>
                 <li>Confirm wake word + transcript logging.</li>
                 <li>Use <code>say</code> for instant local voice output.</li>
@@ -617,125 +983,265 @@
                 <li>Add richer behavior only after the basic loop feels solid.</li>
               </ul>
             </div>
-          </details>
-        </section>
-
-        <section id="projects" class="section searchable">
-          <div class="section-head">
-            <div>
-              <h2>Projects</h2>
-              <div class="section-sub">A light, structured project board that stays calm instead of noisy.</div>
-            </div>
           </div>
-          <div class="grid-2">
-            <article class="card-lite">
-              <h3>Voice assistant</h3>
-              <p>Main private/local Jarvis system on Mac.</p>
-              <ul>
-                <li>Wake word done</li>
-                <li>STT close to validation</li>
-                <li>TTS next</li>
-              </ul>
-            </article>
-            <article class="card-lite">
-              <h3>Notes hub</h3>
-              <p>This dashboard is the polished front door for future notes.</p>
-              <ul>
-                <li>Hosted for phone access</li>
-                <li>Jarvis-updated on request</li>
-                <li>Should remain curated and clean</li>
-              </ul>
-            </article>
-            <article class="card-lite">
-              <h3>Assistant workflows</h3>
-              <p>Model routing, recurring automations, and operating behavior.</p>
-              <ul>
-                <li>Claude Code = default coding</li>
-                <li>Codex = heavier special tasks</li>
-                <li>Gemma = tabled for now</li>
-              </ul>
-            </article>
-            <article class="card-lite">
-              <h3>Future expansion</h3>
-              <p>Higher-end experience upgrades after the basic voice loop is solid.</p>
-              <ul>
-                <li>Phone-call style access</li>
-                <li>AirPods / wearable feel</li>
-                <li>Ambient room assistant behavior</li>
-              </ul>
-            </article>
-          </div>
-        </section>
-
-        <section id="resources" class="section searchable">
-          <div class="section-head">
-            <div>
-              <h2>Resources</h2>
-              <div class="section-sub">Useful tools and components worth remembering.</div>
-            </div>
-          </div>
-          <div class="grid-2">
-            <article class="card-lite">
-              <h3>Voice output</h3>
-              <ul>
-                <li><code>say</code> on macOS</li>
-                <li>Piper TTS later for a more custom local voice</li>
-              </ul>
-            </article>
-            <article class="card-lite">
-              <h3>Speech input</h3>
-              <ul>
-                <li>Faster-Whisper</li>
-                <li>Silero VAD</li>
-                <li>OpenWakeWord</li>
-              </ul>
-            </article>
-            <article class="card-lite">
-              <h3>Brain / routing</h3>
-              <ul>
-                <li>OpenClaw as local-first assistant brain</li>
-                <li>Claude fallback only when truly needed</li>
-              </ul>
-            </article>
-            <article class="card-lite">
-              <h3>Maintenance style</h3>
-              <ul>
-                <li>Keep this curated</li>
-                <li>Use polished notes, not raw dumps</li>
-                <li>Prefer clarity over density</li>
-              </ul>
-            </article>
-          </div>
-        </section>
-
-        <section id="rules" class="section searchable">
-          <div class="section-head">
-            <div>
-              <h2>Hub rules</h2>
-              <div class="section-sub">How this should stay useful over time.</div>
-            </div>
-          </div>
-          <div class="callout">
-            This dashboard should stay spacious, intuitive, and pleasant to use. It should feel like a polished workspace page, not a cluttered document. Jarvis should keep sections organized, avoid overcrowding, and update it whenever Mr. Kani asks.
-          </div>
-          <div class="footer-note">
-            This pass specifically pushes the design closer to Notion: lighter palette, softer cards, calmer spacing, and cleaner document-style hierarchy.
-          </div>
-        </section>
-      </main>
+        </div>
+      </div>
     </section>
-  </div>
 
-  <script>
-    const search = document.getElementById('search');
-    const blocks = Array.from(document.querySelectorAll('.searchable'));
-    search.addEventListener('input', () => {
-      const q = search.value.trim().toLowerCase();
-      blocks.forEach(block => {
-        const text = block.innerText.toLowerCase();
-        block.classList.toggle('hidden', q && !text.includes(q));
-      });
-    });
-  </script>
+    <div class="divider"></div>
+
+    <!-- ── Hub Rules ── -->
+    <section id="rules" class="section searchable">
+      <div class="section-header">
+        <div class="section-title-group">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--soft)"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5-3-1.5L5 12l.5-3.5L3 6l3.5-.5z"/></svg>
+          <span class="section-title">Hub Rules</span>
+        </div>
+      </div>
+      <div class="callout">
+        This dashboard should stay spacious, intuitive, and pleasant to use. It should feel like a polished workspace, not a cluttered document. Jarvis keeps sections organized, avoids overcrowding, and updates it whenever asked.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ── Command Palette ── -->
+<div class="overlay" id="pal-overlay" onclick="onOverlayClick(event,'pal-overlay',closePalette)">
+  <div class="palette">
+    <div class="palette-search">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--soft);flex-shrink:0"><circle cx="7" cy="7" r="5"/><path d="M12 12l2.5 2.5"/></svg>
+      <input class="palette-input" id="pal-input" placeholder="Search notes or jump to a section..." autocomplete="off"
+        oninput="renderPalette()" onkeydown="palKey(event)">
+    </div>
+    <div class="palette-results" id="pal-results"></div>
+    <div class="palette-footer">
+      <span class="pf-item"><span class="kkey">↑↓</span> navigate</span>
+      <span class="pf-item"><span class="kkey">↵</span> select</span>
+      <span class="pf-item"><span class="kkey">Esc</span> close</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── New Note Modal ── -->
+<div class="modal-bg" id="note-modal" onclick="onOverlayClick(event,'note-modal',closeNote)">
+  <div class="modal">
+    <div class="modal-title">New note</div>
+    <div class="fg">
+      <label class="flabel">Title</label>
+      <input class="finput" id="n-title" type="text" placeholder="Give it a name..." oninput="doAutoClassify()">
+    </div>
+    <div class="fg">
+      <label class="flabel">Content</label>
+      <textarea class="ftextarea" id="n-content" placeholder="Write your note..." oninput="doAutoClassify()"></textarea>
+    </div>
+    <div class="classify-hint hidden" id="classify-hint">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5-3-1.5L5 12l.5-3.5L3 6z"/></svg>
+      <span id="classify-text">Auto-classified as: Ideas</span>
+    </div>
+    <div class="fg">
+      <label class="flabel">Section</label>
+      <select class="fselect" id="n-section" onchange="disableAutoClassify()">
+        <option value="ideas">Ideas</option>
+        <option value="projects">Active projects</option>
+        <option value="school">School</option>
+        <option value="automations">Automations</option>
+        <option value="life-systems">Life systems</option>
+        <option value="reference">Reference shelf</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeNote()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNote()">Save  <span style="opacity:.6;font-size:11px">⌘↵</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Storage ── */
+const KEY = 'fn-v2';
+let notes = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } })();
+const persist = () => localStorage.setItem(KEY, JSON.stringify(notes));
+
+/* ── Helpers ── */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const ago = ts => {
+  const d = Date.now() - ts;
+  if (d < 60e3) return 'just now';
+  if (d < 3600e3) return Math.floor(d/60e3)+'m ago';
+  if (d < 86400e3) return Math.floor(d/3600e3)+'h ago';
+  return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+};
+
+/* ── Sections ── */
+const SECS = ['ideas','projects','school','automations','life-systems','reference'];
+const SEC_LABELS = {ideas:'Ideas',projects:'Active Projects',school:'School',automations:'Automations','life-systems':'Life Systems',reference:'Reference Shelf'};
+
+/* ── Render notes ── */
+function render() {
+  SECS.forEach(s => {
+    const cont = $('notes-'+s);
+    if (!cont) return;
+    const ns = notes.filter(n => n.section === s);
+    const nc = $('nc-'+s); if (nc) nc.textContent = ns.length || (s==='projects'||s==='reference'?'—':'0');
+    const dc = $('dc-'+s); if (dc) dc.textContent = ns.length+' note'+(ns.length!==1?'s':'');
+    cont.innerHTML = ns.map(n => `
+      <div class="note-card" id="nc-${n.id}">
+        <button class="note-del" onclick="delNote('${n.id}')" title="Delete">
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3l10 10M13 3L3 13"/></svg>
+        </button>
+        <div class="note-header">
+          <div class="note-title">${esc(n.title||'Untitled')}</div>
+          <div class="note-date">${ago(n.ts)}</div>
+        </div>
+        ${n.body ? `<div class="note-text">${esc(n.body)}</div>` : ''}
+      </div>
+    `).join('');
+    const em = $('empty-'+s);
+    if (em) em.style.display = ns.length ? 'none' : '';
+  });
+}
+
+function delNote(id) {
+  notes = notes.filter(n => n.id !== id);
+  persist(); render();
+}
+
+/* ── Auto-classify ── */
+const RULES = [
+  {s:'school',kw:['class','course','homework','assignment','exam','grade','professor','lecture','semester','study','deadline','gpa']},
+  {s:'automations',kw:['automation','workflow','script','jarvis','openclaw','trigger','cron','schedule','pipeline','bot','task']},
+  {s:'life-systems',kw:['habit','routine','daily','morning','exercise','sleep','health','goal','system','accountability','rule']},
+  {s:'projects',kw:['project','build','launch','ship','feature','milestone','sprint','product','progress']},
+  {s:'reference',kw:['tool','library','resource','link','docs','reference','guide','api','package','framework','tutorial']},
+];
+
+let acEnabled = true;
+const disableAutoClassify = () => { acEnabled = false; $('classify-hint').classList.add('hidden'); };
+
+function doAutoClassify() {
+  if (!acEnabled) return;
+  const text = ($('n-title').value+' '+$('n-content').value).toLowerCase();
+  if (!text.trim()) { $('classify-hint').classList.add('hidden'); return; }
+  let section = 'ideas';
+  for (const r of RULES) { if (r.kw.some(k => text.includes(k))) { section = r.s; break; } }
+  $('n-section').value = section;
+  $('classify-text').textContent = 'Auto-classified as: '+SEC_LABELS[section];
+  $('classify-hint').classList.remove('hidden');
+}
+
+/* ── New Note modal ── */
+let noteOpen = false;
+
+function openNewNote(sec=null) {
+  $('n-title').value=''; $('n-content').value='';
+  $('classify-hint').classList.add('hidden');
+  acEnabled = true;
+  $('n-section').value = sec || 'ideas';
+  $('note-modal').classList.add('open');
+  noteOpen = true;
+  setTimeout(()=>$('n-title').focus(),50);
+}
+
+function closeNote() { $('note-modal').classList.remove('open'); noteOpen=false; }
+
+function saveNote() {
+  const title = $('n-title').value.trim();
+  const body  = $('n-content').value.trim();
+  const section = $('n-section').value;
+  if (!title && !body) return;
+  const id = Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  notes = [{id,title:title||'Untitled',body,section,ts:Date.now()},...notes];
+  persist(); render(); closeNote();
+  setTimeout(()=>$(section)?.scrollIntoView({behavior:'smooth',block:'start'}),120);
+}
+
+/* ── Summary ── */
+function toggleSummary(sec) {
+  const el = $('summary-'+sec);
+  if (!el) return;
+  if (!el.classList.contains('hidden')) { el.classList.add('hidden'); return; }
+  const ns = notes.filter(n=>n.section===sec);
+  if (!ns.length) {
+    el.innerHTML='<div class="summary-card"><div class="summary-title">Summary</div>No notes in this section yet.</div>';
+  } else {
+    const words = ns.reduce((a,n)=>a+(n.body||'').split(/\s+/).filter(Boolean).length,0);
+    el.innerHTML=`<div class="summary-card"><div class="summary-title">Section summary</div><strong>${ns.length} note${ns.length!==1?'s':''}</strong> · ${words} word${words!==1?'s':''}<br><br>${ns.map(n=>'· '+n.title).join('<br>')}</div>`;
+  }
+  el.classList.remove('hidden');
+}
+
+/* ── Accordion ── */
+function toggleAcc(id) { $(id).classList.toggle('open'); }
+
+/* ── Overlay helper ── */
+function onOverlayClick(e, bgId, closeFn) { if(e.target===$(bgId)) closeFn(); }
+
+/* ── Command Palette ── */
+let palOpen=false, palSel=0;
+
+const CMDS = [
+  {l:'New note',          d:'Create',    fn:()=>{closePalette();openNewNote();}},
+  {l:'New idea',          d:'→ Ideas',   fn:()=>{closePalette();openNewNote('ideas');}},
+  {l:'New project note',  d:'→ Projects',fn:()=>{closePalette();openNewNote('projects');}},
+  {l:'New school note',   d:'→ School',  fn:()=>{closePalette();openNewNote('school');}},
+  {l:'New automation',    d:'→ Automations',fn:()=>{closePalette();openNewNote('automations');}},
+  {l:'New life system',   d:'→ Life Systems',fn:()=>{closePalette();openNewNote('life-systems');}},
+  {l:'New reference',     d:'→ Reference',fn:()=>{closePalette();openNewNote('reference');}},
+  {l:'Jump: Projects',    d:'Navigate',  fn:()=>{closePalette();$('projects')?.scrollIntoView({behavior:'smooth'});}},
+  {l:'Jump: Voice Jarvis',d:'Navigate',  fn:()=>{closePalette();$('voice-jarvis')?.scrollIntoView({behavior:'smooth'});}},
+  {l:'Jump: Hub Rules',   d:'Navigate',  fn:()=>{closePalette();$('rules')?.scrollIntoView({behavior:'smooth'});}},
+];
+
+function openPalette() {
+  $('pal-overlay').classList.add('open');
+  $('pal-input').value=''; palOpen=true; palSel=0;
+  renderPalette();
+  setTimeout(()=>$('pal-input').focus(),50);
+}
+
+function closePalette() { $('pal-overlay').classList.remove('open'); palOpen=false; }
+
+function getResults(q) {
+  const lo = q.toLowerCase();
+  const noteHits = q ? notes.filter(n=>n.title.toLowerCase().includes(lo)||(n.body||'').toLowerCase().includes(lo)).slice(0,4).map(n=>({l:n.title,d:SEC_LABELS[n.section],fn:()=>{closePalette();$(n.section)?.scrollIntoView({behavior:'smooth'});}})) : [];
+  const cmdHits = CMDS.filter(c=>!q||c.l.toLowerCase().includes(lo));
+  return [...noteHits,...cmdHits].slice(0,9);
+}
+
+function renderPalette() {
+  const q=$('pal-input').value; const res=getResults(q);
+  if(!res.length){$('pal-results').innerHTML='<div class="p-result" style="color:var(--soft);cursor:default">No results</div>';return;}
+  $('pal-results').innerHTML=res.map((r,i)=>`
+    <div class="p-result${i===palSel?' sel':''}" data-i="${i}" onclick="pickResult(${i})">
+      ${esc(r.l)}<span class="p-result-desc">${esc(r.d)}</span>
+    </div>`).join('');
+}
+
+function pickResult(i) { const q=$('pal-input').value; const res=getResults(q); res[i]?.fn(); }
+
+function palKey(e) {
+  const q=$('pal-input').value; const res=getResults(q);
+  if(e.key==='ArrowDown'){palSel=Math.min(palSel+1,res.length-1);renderPalette();e.preventDefault();}
+  else if(e.key==='ArrowUp'){palSel=Math.max(palSel-1,0);renderPalette();e.preventDefault();}
+  else if(e.key==='Enter'){pickResult(palSel);e.preventDefault();}
+  else if(e.key==='Escape'){closePalette();}
+}
+
+/* ── Global keyboard shortcuts ── */
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement.tagName;
+  const typing = tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT';
+
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();palOpen?closePalette():openPalette();return;}
+  if(noteOpen&&(e.metaKey||e.ctrlKey)&&e.key==='Enter'){saveNote();return;}
+  if(e.key==='Escape'){if(noteOpen)closeNote();if(palOpen)closePalette();return;}
+  if(!typing&&e.key==='n'&&!e.metaKey&&!e.ctrlKey){e.preventDefault();openNewNote();}
+});
+
+/* ── Init ── */
+render();
+</script>
 </body>
 </html>
